@@ -67,4 +67,15 @@ describe 'Inventory' do
     updated_item = add_item_and_update_price('Concert Tickets', 0, 20)
     expect(updated_item.price).to eq(0)
   end
+
+  it 'reduces price for Flowers twice as fast as other items' do
+    update_item = add_item_and_update_price('Flowers', 10, 20)
+    expect(update_item.sell_by).to eq(9)
+    expect(update_item.price).to eq(18)
+  end
+
+  it 'reduces price for Flowers four times as fast beyond sell by date' do
+    update_item = add_item_and_update_price('Flowers', -1, 1)
+    expect(update_item.price).to eq(0)
+  end
 end

@@ -6,9 +6,13 @@ class Inventory
 
   def update_price
     @items.each do |item|
+      item.adjust_price
       if item.name != "Fine Art" and item.name != "Concert Tickets"
         if item.price > 0
           if item.name != "Gold Coins"
+            item.price = item.price - 1
+          end
+          if item.name == 'Flowers' && item.price > 0
             item.price = item.price - 1
           end
         end
@@ -39,6 +43,9 @@ class Inventory
               if item.name != "Gold Coins"
                 item.price = item.price - 1
               end
+              if item.name == 'Flowers' && item.price > 0
+                item.price = item.price - 1
+              end
             end
           else
             item.price = item.price - item.price
@@ -53,6 +60,29 @@ class Inventory
   end
 end
 
+class Gold < Item
+
+  def adjust_price
+  end
+end
+
+class Flower < Item
+  PRICE_ADJUSTMENT = -2
+  PRICE_ADJUSTMENT_MODIFIER = 2
+
+  def adjust_price
+    if sell_by > 0
+      price = price - PRICE_ADJUSTMENT
+    else
+      price = price - (PRICE_ADJUSTMENT * PRICE_ADJUSTMENT_MODIFIER)
+    end
+    price = 0 if price < 0
+    adjust_sell_by
+  end
+end
+
+GenericItem
+
 class Item
   attr_accessor :name, :sell_by, :price
 
@@ -60,6 +90,16 @@ class Item
     @name = name
     @sell_by = sell_by
     @price = price
+  end
+
+  def adjust_price
+    if price > 0
+      price = price - 1
+    end
+  end
+
+  def adjust_sell_by
+    sell_by = sell_by - 1
   end
 
   def to_s
